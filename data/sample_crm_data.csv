@@ -1,0 +1,21 @@
+customer_id,region,product_id,product_name,sale_amount,return_amount,sale_date,sales_rep_id,channel,status
+CUST001,North,PROD101,Laptop Pro X,85000.00,0.00,2024-01-05,REP001,Online,Completed
+CUST002,South,PROD102,Wireless Mouse,1500.00,0.00,2024-01-05,REP002,Retail,Completed
+CUST003,East,PROD103,USB-C Hub,3200.00,3200.00,2024-01-06,REP003,Online,Returned
+CUST004,West,PROD101,Laptop Pro X,85000.00,0.00,2024-01-06,REP004,Online,Completed
+CUST005,North,PROD104,Mechanical Keyboard,7500.00,0.00,2024-01-07,REP001,Retail,Completed
+CUST006,South,PROD105,4K Monitor,32000.00,0.00,2024-01-07,REP005,Online,Completed
+CUST007,East,PROD102,Wireless Mouse,1500.00,1500.00,2024-01-08,REP002,Retail,Returned
+CUST008,West,PROD106,Webcam HD,4500.00,0.00,2024-01-08,REP006,Online,Completed
+CUST009,North,PROD107,Headphones Pro,12000.00,0.00,2024-01-09,REP001,Online,Completed
+CUST010,South,PROD101,Laptop Pro X,85000.00,0.00,2024-01-09,REP007,Corporate,Completed
+CUST011,East,PROD108,SSD 1TB,8500.00,0.00,2024-01-10,REP003,Online,Completed
+CUST012,West,PROD104,Mechanical Keyboard,7500.00,7500.00,2024-01-10,REP004,Retail,Returned
+CUST013,North,PROD109,Smart Speaker,5500.00,0.00,2024-01-11,REP008,Online,Completed
+CUST014,South,PROD110,Tablet 10inch,22000.00,0.00,2024-01-11,REP002,Online,Completed
+CUST015,East,PROD101,Laptop Pro X,85000.00,0.00,2024-01-12,REP009,Corporate,Completed
+CUST016,West,PROD105,4K Monitor,32000.00,0.00,2024-01-12,REP005,Online,Completed
+CUST017,North,PROD106,Webcam HD,4500.00,0.00,2024-01-13,REP001,Retail,Completed
+CUST018,South,PROD108,SSD 1TB,8500.00,0.00,2024-01-13,REP006,Online,Completed
+CUST019,East,PROD107,Headphones Pro,12000.00,12000.00,2024-01-14,REP003,Online,Returned
+CUST020,West,PROD110,Tablet 10inch,22000.00,0.00,2024-01-14,REP007,Corporate,Completed

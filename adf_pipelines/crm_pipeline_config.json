@@ -1,0 +1,99 @@
+{
+    "name": "CRM_ETL_Master_Pipeline",
+    "properties": {
+        "description": "Master pipeline orchestrating Bronze → Silver → Gold CRM data processing",
+        "activities": [
+            {
+                "name": "Set_Batch_ID",
+                "type": "SetVariable",
+                "typeProperties": {
+                    "variableName": "batch_id",
+                    "value": {
+                        "value": "@concat('batch_', formatDateTime(utcNow(), 'yyyyMMdd_HHmmss'))",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "Bronze_Ingestion",
+                "type": "DatabricksNotebook",
+                "dependsOn": [{ "activity": "Set_Batch_ID", "dependencyConditions": ["Succeeded"] }],
+                "typeProperties": {
+                    "notebookPath": "/Shared/crm-pipeline/01_bronze_ingestion",
+                    "baseParameters": {
+                        "batch_id": { "value": "@variables('batch_id')", "type": "Expression" }
+                    }
+                },
+                "linkedServiceName": { "referenceName": "AzureDatabricks_LinkedService", "type": "LinkedServiceReference" }
+            },
+            {
+                "name": "Silver_Transformation",
+                "type": "DatabricksNotebook",
+                "dependsOn": [{ "activity": "Bronze_Ingestion", "dependencyConditions": ["Succeeded"] }],
+                "typeProperties": {
+                    "notebookPath": "/Shared/crm-pipeline/02_silver_transformation",
+                    "baseParameters": {
+                        "batch_id": { "value": "@variables('batch_id')", "type": "Expression" }
+                    }
+                },
+                "linkedServiceName": { "referenceName": "AzureDatabricks_LinkedService", "type": "LinkedServiceReference" }
+            },
+            {
+                "name": "Gold_Aggregation",
+                "type": "DatabricksNotebook",
+                "dependsOn": [{ "activity": "Silver_Transformation", "dependencyConditions": ["Succeeded"] }],
+                "typeProperties": {
+                    "notebookPath": "/Shared/crm-pipeline/03_gold_aggregation",
+                    "baseParameters": {
+                        "batch_id":      { "value": "@variables('batch_id')", "type": "Expression" },
+                        "report_year":   { "value": "@formatDateTime(utcNow(), 'yyyy')", "type": "Expression" },
+                        "report_month":  { "value": "@formatDateTime(utcNow(), 'MM')", "type": "Expression" }
+                    }
+                },
+                "linkedServiceName": { "referenceName": "AzureDatabricks_LinkedService", "type": "LinkedServiceReference" }
+            },
+            {
+                "name": "Pipeline_Monitoring",
+                "type": "DatabricksNotebook",
+                "dependsOn": [{ "activity": "Gold_Aggregation", "dependencyConditions": ["Succeeded", "Failed"] }],
+                "typeProperties": {
+                    "notebookPath": "/Shared/crm-pipeline/04_pipeline_monitoring",
+                    "baseParameters": {
+                        "batch_id": { "value": "@variables('batch_id')", "type": "Expression" }
+                    }
+                },
+                "linkedServiceName": { "referenceName": "AzureDatabricks_LinkedService", "type": "LinkedServiceReference" }
+            },
+            {
+                "name": "On_Failure_Alert",
+                "type": "WebActivity",
+                "dependsOn": [{ "activity": "Gold_Aggregation", "dependencyConditions": ["Failed"] }],
+                "typeProperties": {
+                    "url": "YOUR_TEAMS_WEBHOOK_URL",
+                    "method": "POST",
+                    "body": {
+                        "value": "@concat('{\"text\": \" CRM Pipeline FAILED for batch: ', variables('batch_id'), '\"}')",
+                        "type": "Expression"
+                    }
+                }
+            }
+        ],
+        "variables": {
+            "batch_id": { "type": "String", "defaultValue": "" }
+        },
+        "triggers": [
+            {
+                "name": "Daily_8AM_Trigger",
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "schedule": { "hours": [8], "minutes": [0] },
+                        "timeZone": "India Standard Time"
+                    }
+                }
+            }
+        ]
+    }
+}
